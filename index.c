@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdbool.h>
 
 void insertionSort(int arr[], int n)
 {
@@ -50,6 +51,16 @@ int* generateVector(int size, int strategy, int seed) {
     return ptr;
 }
 
+bool isCorrectlySorted(int arr[], int n){
+    int i;
+    for (i=1; i<n; i++)
+        if (arr[i-1] > arr[i]){
+            printf("Found: [%d] > [%d]\n", arr[i-1], arr[i]);
+            return false;
+        }
+    return true;
+}
+
 float* insertionSortAnalysys(
     int n,
     int strategy
@@ -64,8 +75,12 @@ float* insertionSortAnalysys(
         start = clock();
         insertionSort(vector, n);
         end = clock();
-        free(vector);
         result[i] = ((double) end - start) / CLOCKS_PER_SEC;
+
+        if (! isCorrectlySorted(vector, n))
+            fprintf(stderr, "%d/%d, Vector not sorted!\n", i, j);
+
+        free(vector);
  
         if ((i + 1) % 3 == 0) {
             j++;
