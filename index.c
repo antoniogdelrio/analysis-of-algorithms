@@ -17,7 +17,7 @@ void insertionSort(int arr[], int n)
     }
 }
 
-int* fillVector(int size, int strategy, int* vector) {
+int* fillVector(int size, int strategy, int* vector, int seed) {
     int i;
     switch(strategy) {
         case(1):
@@ -26,9 +26,10 @@ int* fillVector(int size, int strategy, int* vector) {
             }
             break;
         case(2):
-            srand((unsigned int) time(NULL));
+            srand((unsigned int) seed);
             for (i = 0; i < size; i++) {
                 vector[i] = (int)(((float) rand() / (float)(RAND_MAX)) * (float) size);
+                printf("%d\n", vector[i]);
             }
             break;
         case(3):
@@ -42,9 +43,9 @@ int* fillVector(int size, int strategy, int* vector) {
     return vector;
 }
 
-int* generateVector(int size, int strategy) {
+int* generateVector(int size, int strategy, int seed) {
     int* ptr = (int*)malloc(size * sizeof(int));
-    ptr = fillVector(size, strategy, ptr);
+    ptr = fillVector(size, strategy, ptr, seed);
 
     return ptr;
 }
@@ -53,18 +54,22 @@ float* insertionSortAnalysys(
     int n,
     int strategy
 ) {
-    static float result[3] = {0, 0, 0};
+    static float result[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     int i;
     clock_t start, end;
     int* vector;
 
-    for (int i = 0; i < 3; i++) {
-        vector = generateVector(n, strategy);
+    for (int i = 0, j = 1; i < 9; i++) {
+        vector = generateVector(n, strategy, j);
         start = clock();
         insertionSort(vector, n);
         end = clock();
         free(vector);
         result[i] = ((double) end - start) / CLOCKS_PER_SEC;
+ 
+        if ((i + 1) % 3 == 0) {
+            j++;
+        }
     }
     return result;
 }
