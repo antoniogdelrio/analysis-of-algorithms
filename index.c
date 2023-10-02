@@ -3,6 +3,8 @@
 #include <time.h>
 #include <stdbool.h>
 
+typedef void (*SortFunctionPtr)(int[], int);
+
 void insertionSort(int arr[], int n)
 {
     int i, key, j;
@@ -30,7 +32,6 @@ int* fillVector(int size, int strategy, int* vector, int seed) {
             srand((unsigned int) seed);
             for (i = 0; i < size; i++) {
                 vector[i] = (int)(((float) rand() / (float)(RAND_MAX)) * (float) size);
-                printf("%d\n", vector[i]);
             }
             break;
         case(3):
@@ -61,9 +62,10 @@ bool isCorrectlySorted(int arr[], int n){
     return true;
 }
 
-float* insertionSortAnalysys(
+float* sortAnalysis(
     int n,
-    int strategy
+    int strategy,
+    SortFunctionPtr fn
 ) {
     static float result[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     int i;
@@ -73,7 +75,7 @@ float* insertionSortAnalysys(
     for (int i = 0, j = 1; i < 9; i++) {
         vector = generateVector(n, strategy, j);
         start = clock();
-        insertionSort(vector, n);
+        fn(vector, n);
         end = clock();
         result[i] = ((double) end - start) / CLOCKS_PER_SEC;
 
@@ -90,10 +92,10 @@ float* insertionSortAnalysys(
 }
 
 void main() {
-    int n = 100000;
-    int strategy = 3;
+    int n = 20;
+    int strategy = 2;
 
-    float* results = insertionSortAnalysys(n, strategy);
+    float* results = sortAnalysis(n, strategy, insertionSort);
     
     for (int k = 0; k < 3; k++) {
         printf("%f, \n", results[k]);
