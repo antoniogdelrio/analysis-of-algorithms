@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef void (*SortFunctionPtr)(int[], int);
 
@@ -62,15 +63,22 @@ bool isCorrectlySorted(int arr[], int n){
     return true;
 }
 
+SortFunctionPtr getAlgorithmFunction(char* algorithm) {
+    if (!strcmp(algorithm, "INSERTION_SORT")) {
+        return insertionSort;
+    }
+}
+
 float* sortAnalysis(
     int n,
     int strategy,
-    SortFunctionPtr fn
+    char* algorithm
 ) {
     static float result[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     int i;
     clock_t start, end;
     int* vector;
+    SortFunctionPtr fn = getAlgorithmFunction(algorithm);
 
     for (int i = 0, j = 1; i < 9; i++) {
         vector = generateVector(n, strategy, j);
@@ -91,13 +99,24 @@ float* sortAnalysis(
     return result;
 }
 
-void main() {
-    int n = 20;
-    int strategy = 2;
+int main(int argc, char *argv[]) {
+    unsigned int n;
+    int strategy;
+    char* algorithm;
 
-    float* results = sortAnalysis(n, strategy, insertionSort);
+    if (argc != 4) {
+        fprintf(stderr, "3 arguments expected/");
+        return -1;
+    }
+
+    n = strtoul(argv[1], 0L, 10);
+    strategy = atoi(argv[2]);
+    algorithm = argv[3];
+
+    float* results = sortAnalysis(n, strategy, algorithm);
     
-    for (int k = 0; k < 3; k++) {
-        printf("%f, \n", results[k]);
+    for (int k = 0; k < 9; k++) {
+        fprintf(stdout, "%f ", results[k]);
+        fprintf(stdout, "\n");
     }
 }
