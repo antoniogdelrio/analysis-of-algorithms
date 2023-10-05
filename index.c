@@ -5,6 +5,8 @@
 #include "util.c"
 #include "selectionSort.c"
 #include "quickSort.c"
+#include "mergeSort.c"
+#include "heapSort.c"
 
 typedef void (*SortFunctionPtr)(int[], int);
 
