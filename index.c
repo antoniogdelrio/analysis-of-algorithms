@@ -3,6 +3,9 @@
 #include <time.h>
 #include <stdbool.h>
 #include <string.h>
+#include "util.c"
+#include "selectionSort.c"
+#include "quickSort.c"
 
 typedef void (*SortFunctionPtr)(int[], int);
 
@@ -83,6 +86,7 @@ float* sortAnalysis(
     for (int i = 0, j = 1; i < 9; i++) {
         vector = generateVector(n, strategy, j);
         start = clock();
+       
         fn(vector, n);
         end = clock();
         result[i] = ((double) end - start) / CLOCKS_PER_SEC;
