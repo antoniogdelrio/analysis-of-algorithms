@@ -8,38 +8,30 @@
 #include "selectionSort.c"
 #include "quickSort.c"
 
-enum SORT_ALGORITHM {
-    INSERTION_SORT,
-    SELECTION_SORT,
-    QUICK_SORT,
-    MERGE_SORT,
-    HEAP_SORT,
-};
-
 typedef void (*SortFunctionPtr)(int[], int);
 
-int* fillVector(int size, int strategy, int* vector, int seed) {
+int* fillVector(int size, char* strategy, int* vector, int seed) {
     int i;
-    switch(strategy) {
-        case(1):
-            for (i = 0; i < size; i++) {
-                vector[i] = i;
-            }
-            break;
-        case(2):
-            srand((unsigned int) seed);
-            for (i = 0; i < size; i++) {
-                vector[i] = (int)(((float) rand() / (float)(RAND_MAX)) * (float) size);
-            }
-            break;
-        case(3):
-            for (i = 0; i < size; i++) {
-                vector[i] = size - i;
-            }
-            break;
-        default:
-            break;
+
+    if (!strcmp(strategy, "best")) {
+        for (i = 0; i < size; i++) {
+            vector[i] = i;
+        }
     }
+
+    if (!strcmp(strategy, "worst")) {
+        for (i = 0; i < size; i++) {
+            vector[i] = size - i;
+        }
+    }
+
+    if (!strcmp(strategy, "random")) {
+        srand((unsigned int) seed);
+        for (i = 0; i < size; i++) {
+            vector[i] = (int)(((float) rand() / (float)(RAND_MAX)) * (float) size);
+        }
+    }
+
     return vector;
 }
 
@@ -58,69 +50,55 @@ bool isCorrectlySorted(int arr[], int n){
     return true;
 }
 
-SortFunctionPtr getAlgorithmFunction(int algorithm) {
-    if (algorithm == INSERTION_SORT) {
+SortFunctionPtr getAlgorithmFunction(char* algorithm, char* strategy) {
+    if (!strcmp(algorithm, "insertionSort")) {
         return insertionSort;
     }
-    if (algorithm == SELECTION_SORT) {
+    if (!strcmp(algorithm, "selectionSort")) {
         return selectionSort;
     }
-    if (algorithm == QUICK_SORT) {
+    if (!strcmp(algorithm, "quickSort") && !strcmp(strategy, "worst")) {
         return quickStarter;
     }
-    if (algorithm == MERGE_SORT) {
+    if (!strcmp(algorithm, "quickSort")) {
+        return quickStarterAleatorio;
+    }
+    if (!strcmp(algorithm, "mergeSort")) {
+        // TODO: use the mergeSort function
         return insertionSort;
     }
-    if (algorithm == HEAP_SORT) {
+    if (!strcmp(algorithm, "heapSort")) {
+        // TODO: use the mergeSort function
         return insertionSort;
-    }
-}
-
-char* getAlgorithmName(int algorithm) {
-    if (algorithm == INSERTION_SORT) {
-        return "insertionSort";
-    }
-    if (algorithm == SELECTION_SORT) {
-        return "selectionSort";
-    }
-    if (algorithm == QUICK_SORT) {
-        return "quickSort";
-    }
-    if (algorithm == MERGE_SORT) {
-        return "mergeSort";
-    }
-    if (algorithm == HEAP_SORT) {
-        return "heapSort";
     }
 }
 
 float* sortAnalysis(
     int n,
-    int strategy
+    char* strategy,
+    char* algorithm
 ) {
-    static float result[45];
+    static float result[9];
 
     int i;
     clock_t start, end;
     int* vector = allocateVector(n);
 
-    for (int v = 0; v < 5; v++) {
-        SortFunctionPtr fn = getAlgorithmFunction(v);
+    SortFunctionPtr fn = getAlgorithmFunction(algorithm, strategy);
 
-        for (int i = 0, j = 1; i < 9; i++) {
-            int* filledVector = fillVector(n, strategy, vector, j);
-            start = clock();
-            fn(filledVector, n);
-            end = clock();
-            result[v * 9 + i] = ((double) end - start) / CLOCKS_PER_SEC;
+    for (int i = 0, j = 1; i < 9; i++) {
+        int* filledVector = fillVector(n, strategy, vector, j);
+        start = clock();
+        fn(filledVector, n);
+        end = clock();
 
-            if (! isCorrectlySorted(filledVector, n))
-                fprintf(stderr, "%d/%d, Vector not sorted!\n", i, j);
+        result[i] = ((double) end - start) / CLOCKS_PER_SEC;
+
+        if (! isCorrectlySorted(filledVector, n))
+            fprintf(stderr, "%d/%d, Vector not sorted!\n", i, j);
     
-            if ((i + 1) % 3 == 0) {
-                j++;
-            }
-
+        if ((i + 1) % 3 == 0) {
+            j++;
         }
     }
 
@@ -131,24 +109,23 @@ float* sortAnalysis(
 
 int main(int argc, char *argv[]) {
     unsigned int n;
-    int strategy;
+    char* strategy;
+    char* algorithm;
 
-    if (argc != 3) {
-        fprintf(stderr, "2 arguments expected/");
+    if (argc != 4) {
+        fprintf(stderr, "3 arguments expected/");
         return -1;
     }
 
     n = strtoul(argv[1], 0L, 10);
-    strategy = atoi(argv[2]);
+    strategy = argv[2];
+    algorithm = argv[3];
 
-    float* results = sortAnalysis(n, strategy);
+    float* results = sortAnalysis(n, strategy, algorithm);
 
-    for (int v = 0; v < 5; v++) {
-        fprintf(stdout, "%s: ", getAlgorithmName(v));
-        for (int i = 0, j = 1; i < 9; i++) {
-            fprintf(stdout, "%f, ", results[v * 9 + i]);
-        }
-        fprintf(stdout, "\n");
+    fprintf(stdout, "%s: ", algorithm);
+    for (int i = 0; i < 9; i++) {
+        fprintf(stdout, "%f, ", results[i]);
     }
     fprintf(stdout, "\n");
 }
