@@ -34,7 +34,10 @@ sort_analysis = functions.sortAnalysis
 
 # Análises que serão realizadas
 analyses = []
-analyses.append(SortAnalysis(functions.insertionSort, 100000, 2))
+#analyses.append(SortAnalysis(functions.insertionSort, 100000, 2))
+#analyses.append(SortAnalysis(functions.selectionSort, 100000, 2))
+#analyses.append(SortAnalysis(functions.quickStarter, 100000, 2))
+analyses.append(SortAnalysis(functions.mergeStarter, 100000, 2))
 
 # Realização das Análises
 
@@ -47,5 +50,6 @@ for analysis in analyses:
 
     analysis.results = sort_analysis(analysis.n, analysis.strategy, analysis.algorithm).contents
 
-for analysis in analyses:
-    print(str(analysis.results[0]) + " " + str(analysis.results[1]) + " " + str(analysis.results[2]))
+    print(str(analysis.results[0]) + " "
+        + str(analysis.results[1]) + " "
+        + str(analysis.results[2]))
