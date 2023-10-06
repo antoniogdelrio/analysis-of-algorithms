@@ -88,13 +88,6 @@ float* sortAnalysis(
         if (! isCorrectlySorted(vector, n))
             fprintf(stderr, "%d/%d, Vector not sorted!\n", i, j);
 
-        /*
-        for (int k = 0; k < n; k++) {
-            printf("%d, ", vector[k]);
-        }
-        printf("\n");
-        */
-
         free(vector);
  
         if ((i + 1) % 3 == 0) {
