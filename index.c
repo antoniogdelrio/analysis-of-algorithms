@@ -4,25 +4,19 @@
 #include <stdbool.h>
 #include <string.h>
 #include "util.c"
+#include "insertionSort.c"
 #include "selectionSort.c"
 #include "quickSort.c"
 
-typedef void (*SortFunctionPtr)(int[], int);
+enum SORT_ALGORITHM {
+    INSERTION_SORT,
+    SELECTION_SORT,
+    QUICK_SORT,
+    MERGE_SORT,
+    HEAP_SORT,
+};
 
-void insertionSort(int arr[], int n)
-{
-    int i, key, j;
-    for (i = 1; i < n; i++) {
-        key = arr[i];
-        j = i - 1;
- 
-        while (j >= 0 && arr[j] > key) {
-            arr[j + 1] = arr[j];
-            j = j - 1;
-        }
-        arr[j + 1] = key;
-    }
-}
+typedef void (*SortFunctionPtr)(int[], int);
 
 int* fillVector(int size, int strategy, int* vector, int seed) {
     int i;
@@ -49,10 +43,8 @@ int* fillVector(int size, int strategy, int* vector, int seed) {
     return vector;
 }
 
-int* generateVector(int size, int strategy, int seed) {
+int* allocateVector(int size) {
     int* ptr = (int*)malloc(size * sizeof(int));
-    ptr = fillVector(size, strategy, ptr, seed);
-
     return ptr;
 }
 
@@ -66,61 +58,97 @@ bool isCorrectlySorted(int arr[], int n){
     return true;
 }
 
-SortFunctionPtr getAlgorithmFunction(char* algorithm) {
-    if (!strcmp(algorithm, "INSERTION_SORT")) {
+SortFunctionPtr getAlgorithmFunction(int algorithm) {
+    if (algorithm == INSERTION_SORT) {
         return insertionSort;
+    }
+    if (algorithm == SELECTION_SORT) {
+        return selectionSort;
+    }
+    if (algorithm == QUICK_SORT) {
+        return quickStarter;
+    }
+    if (algorithm == MERGE_SORT) {
+        return insertionSort;
+    }
+    if (algorithm == HEAP_SORT) {
+        return insertionSort;
+    }
+}
+
+char* getAlgorithmName(int algorithm) {
+    if (algorithm == INSERTION_SORT) {
+        return "insertionSort";
+    }
+    if (algorithm == SELECTION_SORT) {
+        return "selectionSort";
+    }
+    if (algorithm == QUICK_SORT) {
+        return "quickSort";
+    }
+    if (algorithm == MERGE_SORT) {
+        return "mergeSort";
+    }
+    if (algorithm == HEAP_SORT) {
+        return "heapSort";
     }
 }
 
 float* sortAnalysis(
     int n,
-    int strategy,
-    char* algorithm
+    int strategy
 ) {
-    static float result[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    static float result[45];
+
     int i;
     clock_t start, end;
-    int* vector;
-    SortFunctionPtr fn = getAlgorithmFunction(algorithm);
+    int* vector = allocateVector(n);
 
-    for (int i = 0, j = 1; i < 9; i++) {
-        vector = generateVector(n, strategy, j);
-        start = clock();
-       
-        fn(vector, n);
-        end = clock();
-        result[i] = ((double) end - start) / CLOCKS_PER_SEC;
+    for (int v = 0; v < 5; v++) {
+        SortFunctionPtr fn = getAlgorithmFunction(v);
 
-        if (! isCorrectlySorted(vector, n))
-            fprintf(stderr, "%d/%d, Vector not sorted!\n", i, j);
+        for (int i = 0, j = 1; i < 9; i++) {
+            int* filledVector = fillVector(n, strategy, vector, j);
+            start = clock();
+            fn(filledVector, n);
+            end = clock();
+            result[v * 9 + i] = ((double) end - start) / CLOCKS_PER_SEC;
 
-        free(vector);
- 
-        if ((i + 1) % 3 == 0) {
-            j++;
+            if (! isCorrectlySorted(filledVector, n))
+                fprintf(stderr, "%d/%d, Vector not sorted!\n", i, j);
+    
+            if ((i + 1) % 3 == 0) {
+                j++;
+            }
+
         }
     }
+
+    free(vector);
+
     return result;
 }
 
 int main(int argc, char *argv[]) {
     unsigned int n;
     int strategy;
-    char* algorithm;
 
-    if (argc != 4) {
-        fprintf(stderr, "3 arguments expected/");
+    if (argc != 3) {
+        fprintf(stderr, "2 arguments expected/");
         return -1;
     }
 
     n = strtoul(argv[1], 0L, 10);
     strategy = atoi(argv[2]);
-    algorithm = argv[3];
 
-    float* results = sortAnalysis(n, strategy, algorithm);
-    
-    for (int k = 0; k < 9; k++) {
-        fprintf(stdout, "%f ", results[k]);
+    float* results = sortAnalysis(n, strategy);
+
+    for (int v = 0; v < 5; v++) {
+        fprintf(stdout, "%s: ", getAlgorithmName(v));
+        for (int i = 0, j = 1; i < 9; i++) {
+            fprintf(stdout, "%f, ", results[v * 9 + i]);
+        }
         fprintf(stdout, "\n");
     }
+    fprintf(stdout, "\n");
 }
