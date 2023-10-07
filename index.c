@@ -10,7 +10,7 @@
 
 typedef void (*SortFunctionPtr)(int[], int);
 
-int* fillVector(int size, char* strategy, int* vector, int seed) {
+int* fillVector(unsigned int size, char* strategy, int* vector, int seed) {
     int i;
 
     if (!strcmp(strategy, "best")) {
@@ -74,7 +74,7 @@ SortFunctionPtr getAlgorithmFunction(char* algorithm, char* strategy) {
 }
 
 float* sortAnalysis(
-    int n,
+    unsigned int n,
     char* strategy,
     char* algorithm
 ) {
@@ -94,8 +94,10 @@ float* sortAnalysis(
 
         result[i] = ((double) end - start) / CLOCKS_PER_SEC;
 
-        if (! isCorrectlySorted(filledVector, n))
+        if (! isCorrectlySorted(filledVector, n)) {
             fprintf(stderr, "%d/%d, Vector not sorted!\n", i, j);
+            exit(-1);
+        }
     
         if ((i + 1) % 3 == 0) {
             j++;
