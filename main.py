@@ -1,55 +1,37 @@
 from ctypes import *
 import subprocess
 import os
+import statistics
 
-# Classes das Análises
-class SortAnalysis:
-    """Classe para cada análise de algoritmo"""
-    def __init__(self, algorithm, n, strategy):
-        self.algorithm = algorithm
-        self.strategy = strategy
-        self.n = n
-        self.results = []
+# Parameters
+algorithms = [
+        'insertionSort',
+        'selectionSort',
+        'quickSort',
+        'mergeSort',
+        'heapSort']
+iterations = 1000
+results_best = {algorithm: [] for algorithm in algorithms}
+results_avg = {algorithm: [] for algorithm in algorithms}
+results_worst = {algorithm: [] for algorithm in algorithms}
 
+def compile():
+    cmd = "gcc -O0 src/index.c -o index"
+    subprocess.run(cmd.split())
 
-# Compilação dos arquivos .c
-dir_path = os.getcwd()
+def grab(iterations, case, algorithm):
+    cmd = "./index " + str(iterations) + " " + case + " " + algorithm
+    output = subprocess.run(cmd.split(), 
+                            capture_output=True, text=True).stdout
+    output = output.split(', ')[1:-1]
+    output = [float(string) for string in output]
+    output = statistics.mean(output)
+    return output
 
-source_file = os.path.join(dir_path, "index.c")
-so_file = os.path.join(dir_path, "index.so")
+compile()
 
-if os.path.exists(so_file):
-    os.remove(so_file)
+output = grab(1000, 'worst', 'insertionSort')
+results_worst['insertionSort'].append((1000, output))
 
-try:
-    subprocess.check_call(
-        ["gcc", "-O0", "-shared", "-o", so_file, "-fPIC", source_file]
-    )
-    print("Compilation successful.")
-except subprocess.CalledProcessError:
-    print("Compilation failed.")
-
-functions = CDLL(so_file)
-sort_analysis = functions.sortAnalysis
-
-# Análises que serão realizadas
-analyses = []
-#analyses.append(SortAnalysis(functions.insertionSort, 100000, 2))
-#analyses.append(SortAnalysis(functions.selectionSort, 100000, 2))
-#analyses.append(SortAnalysis(functions.quickStarter, 100000, 2))
-analyses.append(SortAnalysis(functions.mergeStarter, 100000, 2))
-
-# Realização das Análises
-
-for analysis in analyses:
-
-    analysis.results = []
-
-    #analysys[i].algorithm.argtypes = [c_int, c_int]
-    sort_analysis.restype = POINTER(c_float * 3)
-
-    analysis.results = sort_analysis(analysis.n, analysis.strategy, analysis.algorithm).contents
-
-    print(str(analysis.results[0]) + " "
-        + str(analysis.results[1]) + " "
-        + str(analysis.results[2]))
+print(output)
+print(results_worst)
