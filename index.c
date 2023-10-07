@@ -60,6 +60,9 @@ SortFunctionPtr getAlgorithmFunction(char* algorithm, char* strategy) {
     if (!strcmp(algorithm, "quickSort") && !strcmp(strategy, "worst")) {
         return quickStarter;
     }
+    if (!strcmp(algorithm, "quickSort") && !strcmp(strategy, "best")) {
+        return quickStarterOtimo;
+    }
     if (!strcmp(algorithm, "quickSort")) {
         return quickStarterAleatorio;
     }
