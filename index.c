@@ -8,7 +8,7 @@
 #include "selectionSort.c"
 #include "quickSort.c"
 
-typedef void (*SortFunctionPtr)(int[], int);
+typedef void (*SortFunctionPtr)(int[], unsigned int);
 
 int* fillVector(unsigned int size, char* strategy, int* vector, int seed) {
     int i;
