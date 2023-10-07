@@ -46,6 +46,6 @@ void mergeSort(int arr[], int p, int r) {
     }
 }
 
-void mergeStarter(int arr[], int n) {
+void mergeStarter(int arr[], unsigned int n) {
     mergeSort(arr, 0, n - 1);
 }
