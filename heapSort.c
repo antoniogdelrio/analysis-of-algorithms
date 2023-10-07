@@ -29,7 +29,7 @@ void buildMaxHeap(int arr[], int n) {
     }
 }
 
-void heapSort(int arr[], int n) {
+void heapSort(int arr[], unsigned int n) {
     // Construir um heap máximo
     buildMaxHeap(arr, n);
 

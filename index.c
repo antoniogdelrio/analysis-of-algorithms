@@ -69,12 +69,10 @@ SortFunctionPtr getAlgorithmFunction(char* algorithm, char* strategy) {
         return quickStarterAleatorio;
     }
     if (!strcmp(algorithm, "mergeSort")) {
-        // TODO: use the mergeSort function
-        return insertionSort;
+        return mergeStarter;
     }
     if (!strcmp(algorithm, "heapSort")) {
-        // TODO: use the mergeSort function
-        return insertionSort;
+        return heapSort;
     }
 }
 
