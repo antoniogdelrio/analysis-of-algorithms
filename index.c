@@ -2,58 +2,43 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
+#include <string.h>
 #include "util.c"
+#include "insertionSort.c"
 #include "selectionSort.c"
 #include "quickSort.c"
 #include "mergeSort.c"
 #include "heapSort.c"
 
-typedef void (*SortFunctionPtr)(int[], int);
+typedef void (*SortFunctionPtr)(int[], unsigned int);
 
-void insertionSort(int arr[], int n)
-{
-    int i, key, j;
-    for (i = 1; i < n; i++) {
-        key = arr[i];
-        j = i - 1;
- 
-        while (j >= 0 && arr[j] > key) {
-            arr[j + 1] = arr[j];
-            j = j - 1;
-        }
-        arr[j + 1] = key;
-    }
-}
-
-int* fillVector(int size, int strategy, int* vector, int seed) {
+int* fillVector(unsigned int size, char* strategy, int* vector, int seed) {
     int i;
-    switch(strategy) {
-        case(1):
-            for (i = 0; i < size; i++) {
-                vector[i] = i;
-            }
-            break;
-        case(2):
-            srand((unsigned int) seed);
-            for (i = 0; i < size; i++) {
-                vector[i] = (int)(((float) rand() / (float)(RAND_MAX)) * (float) size);
-            }
-            break;
-        case(3):
-            for (i = 0; i < size; i++) {
-                vector[i] = size - i;
-            }
-            break;
-        default:
-            break;
+
+    if (!strcmp(strategy, "best")) {
+        for (i = 0; i < size; i++) {
+            vector[i] = i;
+        }
     }
+
+    if (!strcmp(strategy, "worst")) {
+        for (i = 0; i < size; i++) {
+            vector[i] = size - i;
+        }
+    }
+
+    if (!strcmp(strategy, "random")) {
+        srand((unsigned int) seed);
+        for (i = 0; i < size; i++) {
+            vector[i] = (int)(((float) rand() / (float)(RAND_MAX)) * (float) size);
+        }
+    }
+
     return vector;
 }
 
-int* generateVector(int size, int strategy, int seed) {
+int* allocateVector(int size) {
     int* ptr = (int*)malloc(size * sizeof(int));
-    ptr = fillVector(size, strategy, ptr, seed);
-
     return ptr;
 }
 
@@ -67,43 +52,87 @@ bool isCorrectlySorted(int arr[], int n){
     return true;
 }
 
+SortFunctionPtr getAlgorithmFunction(char* algorithm, char* strategy) {
+    if (!strcmp(algorithm, "insertionSort")) {
+        return insertionSort;
+    }
+    if (!strcmp(algorithm, "selectionSort")) {
+        return selectionSort;
+    }
+    if (!strcmp(algorithm, "quickSort") && !strcmp(strategy, "worst")) {
+        return quickStarter;
+    }
+    if (!strcmp(algorithm, "quickSort") && !strcmp(strategy, "best")) {
+        return quickStarterOtimo;
+    }
+    if (!strcmp(algorithm, "quickSort")) {
+        return quickStarterAleatorio;
+    }
+    if (!strcmp(algorithm, "mergeSort")) {
+        // TODO: use the mergeSort function
+        return insertionSort;
+    }
+    if (!strcmp(algorithm, "heapSort")) {
+        // TODO: use the mergeSort function
+        return insertionSort;
+    }
+}
+
 float* sortAnalysis(
-    int n,
-    int strategy,
-    SortFunctionPtr fn
+    unsigned int n,
+    char* strategy,
+    char* algorithm
 ) {
-    static float result[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    static float result[9];
+
     int i;
     clock_t start, end;
-    int* vector;
+    int* vector = allocateVector(n);
+
+    SortFunctionPtr fn = getAlgorithmFunction(algorithm, strategy);
 
     for (int i = 0, j = 1; i < 9; i++) {
-        vector = generateVector(n, strategy, j);
+        int* filledVector = fillVector(n, strategy, vector, j);
         start = clock();
-       
-        fn(vector, n);
+        fn(filledVector, n);
         end = clock();
+
         result[i] = ((double) end - start) / CLOCKS_PER_SEC;
 
-        if (! isCorrectlySorted(vector, n))
+        if (! isCorrectlySorted(filledVector, n)) {
             fprintf(stderr, "%d/%d, Vector not sorted!\n", i, j);
-
-        free(vector);
- 
+            exit(-1);
+        }
+    
         if ((i + 1) % 3 == 0) {
             j++;
         }
     }
+
+    free(vector);
+
     return result;
 }
 
-void main() {
-    int n = 20;
-    int strategy = 2;
+int main(int argc, char *argv[]) {
+    unsigned int n;
+    char* strategy;
+    char* algorithm;
 
-    float* results = sortAnalysis(n, strategy, insertionSort);
-    
-    for (int k = 0; k < 3; k++) {
-        printf("%f, \n", results[k]);
+    if (argc != 4) {
+        fprintf(stderr, "3 arguments expected/");
+        return -1;
     }
+
+    n = strtoul(argv[1], 0L, 10);
+    strategy = argv[2];
+    algorithm = argv[3];
+
+    float* results = sortAnalysis(n, strategy, algorithm);
+
+    fprintf(stdout, "%s: ", algorithm);
+    for (int i = 0; i < 9; i++) {
+        fprintf(stdout, "%f, ", results[i]);
+    }
+    fprintf(stdout, "\n");
 }

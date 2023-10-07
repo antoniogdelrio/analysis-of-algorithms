@@ -1,4 +1,4 @@
-void selectionSort(int arr[], int n)
+void selectionSort(int arr[], unsigned int n)
 {
     int i, menorIndice, j, trocaValor;
 
