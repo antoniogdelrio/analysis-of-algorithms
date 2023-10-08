@@ -38,16 +38,6 @@ def grab(iterations, case, algorithm):
     print('T(n)=' + str(output))
     return output
 
-def plot(data, algorithm, case):
-    n_values = [item[0] for item in data]
-    t_values = [item[1] for item in data]
-    plt.plot(n_values, t_values, marker='o', linestyle='-', color='b')
-    plt.xlabel('n')
-    plt.ylabel('T(n)')
-    plt.title('T(n) x n Plot for ' + algorithm + ' ' + case)
-    plt.savefig('tn_plot_' + algorithm + '_' + case + '.png')
-    plt.close()
-
 def get_iters(algorithm, case):
     if expected[algorithm][case] == 'nlogn':
         iterations = 2_000_000
