@@ -2,6 +2,22 @@ from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 import numpy as np
 
+def pretty_params(function, coefficients):
+    formatted_str = ""
+
+    if function == quadratic_function:
+        formatted_str = f"{coefficients[0]:.2e}n² + {coefficients[1]:.2e}n + {coefficients[2]:.2e}"
+    elif function == n_log_n_function:
+        # Handle n log n function
+        formatted_str = f"{coefficients[0]:.2e}n log(n) + {coefficients[1]:.2e}"
+    elif function == linear_function:
+        # For linear function, only show terms for n
+        formatted_str = f"{coefficients[0]:.2e}n + {coefficients[1]:.2e}"
+    else:
+        formatted_str = 'Fitted Curve'
+
+    return formatted_str
+
 def fit_and_plot(data, fitting_function, algorithm, case):
     n_values = np.array([item[0] for item in data])
     t_values = np.array([item[1] for item in data])
@@ -13,7 +29,8 @@ def fit_and_plot(data, fitting_function, algorithm, case):
 
     # Plotting the original data and the fitted curve
     plt.plot(n_values, t_values, marker='o', linestyle='-', color='b', label='Original Data')
-    plt.plot(n_values, fit_curve, linestyle='--', color='r', label='Fitted Curve')
+    plt.plot(n_values, fit_curve, linestyle='--', color='r', 
+             label=pretty_params(fitting_function, fitted_params))
 
     # Adding labels and title
     plt.xlabel('n')
