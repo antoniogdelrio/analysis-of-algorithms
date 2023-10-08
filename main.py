@@ -1,55 +1,52 @@
 from ctypes import *
 import subprocess
 import os
+import statistics
+import matplotlib.pyplot as plt
 
-# Classes das Análises
-class SortAnalysis:
-    """Classe para cada análise de algoritmo"""
-    def __init__(self, algorithm, n, strategy):
-        self.algorithm = algorithm
-        self.strategy = strategy
-        self.n = n
-        self.results = []
+# Parameters
+algorithms = [
+        'insertionSort',
+        'selectionSort',
+        'quickSort',
+        'mergeSort',
+        'heapSort']
+results = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in algorithms}
 
+def compile():
+    cmd = "gcc -O0 src/index.c -o index"
+    subprocess.run(cmd.split())
 
-# Compilação dos arquivos .c
-dir_path = os.getcwd()
+def grab(iterations, case, algorithm):
+    print("Running " + algorithm
+          + " with n=" + str(iterations) 
+          + " and "
+          + case + " case.")
+    cmd = "./index " + str(iterations) + " " + case + " " + algorithm
+    output = subprocess.run(cmd.split(), 
+                            capture_output=True, text=True).stdout
+    output = output.split(', ')[1:-1]
+    output = [float(string) for string in output]
+    output = statistics.mean(output)
+    return output
 
-source_file = os.path.join(dir_path, "index.c")
-so_file = os.path.join(dir_path, "index.so")
+def plot(data, algorithm, case):
+    n_values = [item[0] for item in data]
+    t_values = [item[1] for item in data]
+    plt.plot(n_values, t_values, marker='o', linestyle='-', color='b')
+    plt.xlabel('n')
+    plt.ylabel('T(n)')
+    plt.title('T(n) x n Plot for ' + algorithm + ' ' + case)
+    plt.savefig('tn_plot_' + algorithm + '_' + case + '.png')
+    plt.close()
 
-if os.path.exists(so_file):
-    os.remove(so_file)
+compile()
 
-try:
-    subprocess.check_call(
-        ["gcc", "-O0", "-shared", "-o", so_file, "-fPIC", source_file]
-    )
-    print("Compilation successful.")
-except subprocess.CalledProcessError:
-    print("Compilation failed.")
-
-functions = CDLL(so_file)
-sort_analysis = functions.sortAnalysis
-
-# Análises que serão realizadas
-analyses = []
-#analyses.append(SortAnalysis(functions.insertionSort, 100000, 2))
-#analyses.append(SortAnalysis(functions.selectionSort, 100000, 2))
-#analyses.append(SortAnalysis(functions.quickStarter, 100000, 2))
-analyses.append(SortAnalysis(functions.mergeStarter, 100000, 2))
-
-# Realização das Análises
-
-for analysis in analyses:
-
-    analysis.results = []
-
-    #analysys[i].algorithm.argtypes = [c_int, c_int]
-    sort_analysis.restype = POINTER(c_float * 3)
-
-    analysis.results = sort_analysis(analysis.n, analysis.strategy, analysis.algorithm).contents
-
-    print(str(analysis.results[0]) + " "
-        + str(analysis.results[1]) + " "
-        + str(analysis.results[2]))
+iterations = 200000
+step=int(iterations/10)
+for algorithm in algorithms:
+    for case in ['worst', 'random', 'best']:
+        for n in range(step, iterations, step):
+            output = grab(n, case, algorithm)
+            results[algorithm][case].append((n, output))
+        plot(results[algorithm][case], algorithm, case)
