@@ -25,16 +25,16 @@ def compile():
     subprocess.run(cmd.split())
 
 def grab(iterations, case, algorithm):
-    print("Running " + algorithm
-          + " with n=" + str(iterations) 
-          + " and "
-          + case + " case.")
+    print(algorithm
+          + "\t n=" + str(iterations) 
+          + "\t" + case, end='\t')
     cmd = "./index " + str(iterations) + " " + case + " " + algorithm
     output = subprocess.run(cmd.split(), 
                             capture_output=True, text=True).stdout
     output = output.split(', ')[1:-1]
     output = [float(string) for string in output]
     output = statistics.mean(output)
+    print('T(n)=' + str(output))
     return output
 
 def plot(data, algorithm, case):
