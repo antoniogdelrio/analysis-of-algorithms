@@ -45,7 +45,7 @@ def plot(data):
 
 compile()
 
-step=int(iterations/50)
+step=int(iterations/10)
 for n in range(step, iterations, step):
     output = grab(n, 'worst', 'insertionSort')
     results_worst['insertionSort'].append((n, output))
