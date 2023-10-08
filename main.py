@@ -56,12 +56,16 @@ def get_iters(algorithm, case):
         step=int(iterations/10)
     return iterations, step
 
-compile()
+def main():
+    compile()
 
-for algorithm in algorithms:
-    for case in ['worst', 'random', 'best']:
-        iterations, step = get_iters(algorithm, case)
-        for n in range(step, iterations, step):
-            output = grab(n, case, algorithm)
-            results[algorithm][case].append((n, output))
-        plot(results[algorithm][case], algorithm, case)
+    for algorithm in algorithms:
+        for case in ['worst', 'random', 'best']:
+            iterations, step = get_iters(algorithm, case)
+            for n in range(step, iterations, step):
+                output = grab(n, case, algorithm)
+                results[algorithm][case].append((n, output))
+            plot(results[algorithm][case], algorithm, case)
+
+if __name__ == "__main__":
+    main()
