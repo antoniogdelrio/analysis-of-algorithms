@@ -22,6 +22,10 @@ def pretty_params(function, coefficients):
     return formatted_str
 
 def fit_and_plot(data, fitting_function, algorithm, case):
+    plt.style.use('default')
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['axes.facecolor'] = 'white'
+
     n_values = np.array([item[0] for item in data])
     t_values = np.array([item[1] for item in data])
 
@@ -31,16 +35,15 @@ def fit_and_plot(data, fitting_function, algorithm, case):
     fit_curve = fitting_function(n_values, *fitted_params)
 
     # Plotting the original data and the fitted curve
-    plt.plot(n_values, t_values, marker='o', linestyle='-', color='b', label='Original Data')
+    plt.plot(n_values, t_values, marker='o', linestyle='-', color='b', label='Observed Data')
     plt.plot(n_values, fit_curve, linestyle='--', color='r', 
              label=pretty_params(fitting_function, fitted_params))
 
     # Adding labels and title
     plt.xlabel('n')
     plt.ylabel('T(n)')
-    plt.title('T(n) x n Plot for '
-              + firstLetterUppercase(algorithm)
-              + ' ' + case
+    plt.title(firstLetterUppercase(algorithm)
+              + ', ' + case.capitalize() + ' Case,'
               + ' with Curve Fitting')
     # Show the legend
     plt.legend()
