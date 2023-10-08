@@ -12,6 +12,13 @@ algorithms = [
         'mergeSort',
         'heapSort']
 results = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in algorithms}
+expected = {
+        'insertionSort': {'best': 'n',     'random': 'n^2',   'worst': 'n^2'},
+        'selectionSort': {'best': 'n^2',   'random': 'n^2',   'worst': 'n^2'},
+        'quickSort':     {'best': 'nlogn', 'random': 'nlogn', 'worst': 'nlogn'},
+        'mergeSort':     {'best': 'nlogn', 'random': 'nlogn', 'worst': 'nlogn'},
+        'heapSort':      {'best': 'nlogn', 'random': 'nlogn', 'worst': 'n^2'},
+        }
 
 def compile():
     cmd = "gcc -Wl,--stack,32777216 -O0 src/index.c -o index"
