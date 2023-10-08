@@ -2,6 +2,9 @@ from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 import numpy as np
 
+def firstLetterUppercase(input_str):
+    return input_str[0].upper() + input_str[1:] if input_str else input_str
+
 def pretty_params(function, coefficients):
     formatted_str = ""
 
@@ -35,7 +38,10 @@ def fit_and_plot(data, fitting_function, algorithm, case):
     # Adding labels and title
     plt.xlabel('n')
     plt.ylabel('T(n)')
-    plt.title('T(n) x n Plot for ' + algorithm + ' ' + case + ' with Curve Fitting')
+    plt.title('T(n) x n Plot for '
+              + firstLetterUppercase(algorithm)
+              + ' ' + case
+              + ' with Curve Fitting')
     # Show the legend
     plt.legend()
 
