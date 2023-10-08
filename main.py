@@ -3,6 +3,7 @@ import subprocess
 import os
 import statistics
 import matplotlib.pyplot as plt
+import fit
 
 # Parameters
 algorithms = [
@@ -65,7 +66,22 @@ def main():
             for n in range(step, iterations, step):
                 output = grab(n, case, algorithm)
                 results[algorithm][case].append((n, output))
-            plot(results[algorithm][case], algorithm, case)
+
+            if expected[algorithm][case] == 'n^2':
+                selected_function = fit.quadratic_function
+            elif expected[algorithm][case] == 'nlogn':
+                selected_function = fit.n_log_n_function
+            elif expected[algorithm][case] == 'n':
+                selected_function = fit.linear_function
+            else:
+                print("Error while selecting function")
+                return -1
+
+            fit.fit_and_plot(
+                    results[algorithm][case],
+                    selected_function,
+                    algorithm,
+                    case)
 
 if __name__ == "__main__":
     main()
