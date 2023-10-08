@@ -14,7 +14,7 @@ algorithms = [
 results = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in algorithms}
 
 def compile():
-    cmd = "gcc -O0 src/index.c -o index"
+    cmd = "gcc -Wl,--stack,32777216 -O0 src/index.c -o index"
     subprocess.run(cmd.split())
 
 def grab(iterations, case, algorithm):
