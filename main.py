@@ -11,8 +11,7 @@ algorithms = [
         'quickSort',
         'mergeSort',
         'heapSort']
-iterations = 200000
-results = {algorithm: {'best': [], 'avg': [], 'worst': []} for algorithm in algorithms}
+results = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in algorithms}
 
 def compile():
     cmd = "gcc -O0 src/index.c -o index"
@@ -31,21 +30,23 @@ def grab(iterations, case, algorithm):
     output = statistics.mean(output)
     return output
 
-def plot(data):
+def plot(data, algorithm, case):
     n_values = [item[0] for item in data]
     t_values = [item[1] for item in data]
     plt.plot(n_values, t_values, marker='o', linestyle='-', color='b')
     plt.xlabel('n')
     plt.ylabel('T(n)')
-    plt.title('T(n) x n Plot')
-    plt.savefig('tn_plot.png')
+    plt.title('T(n) x n Plot for ' + algorithm + ' ' + case)
+    plt.savefig('tn_plot_' + algorithm + '_' + case + '.png')
     plt.close()
 
 compile()
 
+iterations = 200000
 step=int(iterations/10)
-for n in range(step, iterations, step):
-    output = grab(n, 'worst', 'insertionSort')
-    results['insertionSort']['worst'].append((n, output))
-
-plot(results['insertionSort']['worst'])
+for algorithm in algorithms:
+    for case in ['worst', 'random', 'best']:
+        for n in range(step, iterations, step):
+            output = grab(n, case, algorithm)
+            results[algorithm][case].append((n, output))
+        plot(results[algorithm][case], algorithm, case)
