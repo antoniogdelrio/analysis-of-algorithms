@@ -47,12 +47,20 @@ def plot(data, algorithm, case):
     plt.savefig('tn_plot_' + algorithm + '_' + case + '.png')
     plt.close()
 
+def get_iters(algorithm, case):
+    if expected[algorithm][case] == 'nlogn':
+        iterations = 2_000_000
+        step=int(iterations/15)
+    else:
+        iterations = 200000
+        step=int(iterations/10)
+    return iterations, step
+
 compile()
 
-iterations = 200000
-step=int(iterations/10)
 for algorithm in algorithms:
     for case in ['worst', 'random', 'best']:
+        iterations, step = get_iters(algorithm, case)
         for n in range(step, iterations, step):
             output = grab(n, case, algorithm)
             results[algorithm][case].append((n, output))
