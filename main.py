@@ -12,9 +12,7 @@ algorithms = [
         'mergeSort',
         'heapSort']
 iterations = 200000
-results_best = {algorithm: [] for algorithm in algorithms}
-results_avg = {algorithm: [] for algorithm in algorithms}
-results_worst = {algorithm: [] for algorithm in algorithms}
+results = {algorithm: {'best': [], 'avg': [], 'worst': []} for algorithm in algorithms}
 
 def compile():
     cmd = "gcc -O0 src/index.c -o index"
@@ -48,6 +46,6 @@ compile()
 step=int(iterations/10)
 for n in range(step, iterations, step):
     output = grab(n, 'worst', 'insertionSort')
-    results_worst['insertionSort'].append((n, output))
+    results['insertionSort']['worst'].append((n, output))
 
-plot(results_worst['insertionSort'])
+plot(results['insertionSort']['worst'])
