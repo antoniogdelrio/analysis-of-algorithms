@@ -2,6 +2,7 @@ from ctypes import *
 import subprocess
 import os
 import statistics
+import matplotlib.pyplot as plt
 
 # Parameters
 algorithms = [
@@ -10,7 +11,7 @@ algorithms = [
         'quickSort',
         'mergeSort',
         'heapSort']
-iterations = 1000
+iterations = 200000
 results_best = {algorithm: [] for algorithm in algorithms}
 results_avg = {algorithm: [] for algorithm in algorithms}
 results_worst = {algorithm: [] for algorithm in algorithms}
@@ -20,6 +21,10 @@ def compile():
     subprocess.run(cmd.split())
 
 def grab(iterations, case, algorithm):
+    print("Running " + algorithm
+          + " with n=" + str(iterations) 
+          + " and "
+          + case + " case.")
     cmd = "./index " + str(iterations) + " " + case + " " + algorithm
     output = subprocess.run(cmd.split(), 
                             capture_output=True, text=True).stdout
@@ -28,10 +33,21 @@ def grab(iterations, case, algorithm):
     output = statistics.mean(output)
     return output
 
+def plot(data):
+    n_values = [item[0] for item in data]
+    t_values = [item[1] for item in data]
+    plt.plot(n_values, t_values, marker='o', linestyle='-', color='b')
+    plt.xlabel('n')
+    plt.ylabel('T(n)')
+    plt.title('T(n) x n Plot')
+    plt.savefig('tn_plot.png')
+    plt.close()
+
 compile()
 
-output = grab(1000, 'worst', 'insertionSort')
-results_worst['insertionSort'].append((1000, output))
+step=int(iterations/50)
+for n in range(step, iterations, step):
+    output = grab(n, 'worst', 'insertionSort')
+    results_worst['insertionSort'].append((n, output))
 
-print(output)
-print(results_worst)
+plot(results_worst['insertionSort'])
