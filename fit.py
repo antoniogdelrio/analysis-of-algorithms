@@ -42,9 +42,10 @@ def fit_and_plot(data, fitting_function, algorithm, case):
     # Adding labels and title
     plt.xlabel('n')
     plt.ylabel('T(n)')
-    plt.title(firstLetterUppercase(algorithm)
+    plt.suptitle(firstLetterUppercase(algorithm)
               + ', ' + case.capitalize() + ' Case,'
-              + ' with Curve Fitting')
+              + ' with Curve Fitting',
+              fontweight='bold')
     # Show the legend
     plt.legend()
 
