@@ -49,7 +49,8 @@ def fit_and_plot(data, fitting_function, algorithm, case):
     plt.legend()
 
     # Save the plot to a file
-    plt.savefig('tn_plotFit_' + algorithm + '_' + case + '.png')
+    plt.savefig('tn_plotFit_' + algorithm + '_' + case + '.png',
+                bbox_inches='tight')
     plt.close()
 
 def quadratic_function(n, a, b, c):
