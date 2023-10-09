@@ -21,7 +21,7 @@ expected = {
         }
 
 def compile():
-    cmd = "gcc -Wl,--stack,32777216 -O0 src/index.c -o index"
+    cmd = "gcc -O0 src/index.c -o index"
     subprocess.run(cmd.split())
 
 def grab(iterations, case, algorithm):
