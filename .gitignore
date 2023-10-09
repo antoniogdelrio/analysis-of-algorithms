@@ -1,3 +1,7 @@
 *.exe
 .vscode/*
 *.so
+*.png
+__pycache__/
+venv/
+index

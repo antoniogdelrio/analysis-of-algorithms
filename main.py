@@ -1,4 +1,3 @@
-from ctypes import *
 import subprocess
 import os
 import statistics
@@ -16,9 +15,9 @@ results = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in a
 expected = {
         'insertionSort': {'best': 'n',     'random': 'n^2',   'worst': 'n^2'},
         'selectionSort': {'best': 'n^2',   'random': 'n^2',   'worst': 'n^2'},
-        'quickSort':     {'best': 'nlogn', 'random': 'nlogn', 'worst': 'nlogn'},
+        'quickSort':     {'best': 'nlogn', 'random': 'nlogn', 'worst': 'n^2'},
         'mergeSort':     {'best': 'nlogn', 'random': 'nlogn', 'worst': 'nlogn'},
-        'heapSort':      {'best': 'nlogn', 'random': 'nlogn', 'worst': 'n^2'},
+        'heapSort':      {'best': 'nlogn', 'random': 'nlogn', 'worst': 'nlogn'},
         }
 
 def compile():

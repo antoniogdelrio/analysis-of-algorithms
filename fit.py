@@ -39,6 +39,10 @@ def fit_and_plot(data, fitting_function, algorithm, case):
     plt.plot(n_values, fit_curve, linestyle='--', color='r', 
              label=pretty_params(fitting_function, fitted_params))
 
+    # Random is average
+    if case == 'random':
+        case = 'average'
+
     # Adding labels and title
     plt.xlabel('n')
     plt.ylabel('T(n)')
@@ -49,7 +53,11 @@ def fit_and_plot(data, fitting_function, algorithm, case):
     plt.legend()
 
     # Save the plot to a file
-    plt.savefig('tn_plotFit_' + algorithm + '_' + case + '.png')
+    plt.savefig('tn_plotFit_'
+                + algorithm.lower()
+                + '_' + case
+                + '.png',
+                bbox_inches='tight')
     plt.close()
 
 def quadratic_function(n, a, b, c):
