@@ -1,4 +1,3 @@
-from ctypes import *
 import subprocess
 import os
 import statistics
