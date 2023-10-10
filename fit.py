@@ -21,22 +21,29 @@ def pretty_params(function, coefficients):
 
     return formatted_str
 
-def fit_and_plot(data, fitting_function, algorithm, case):
+def fit_and_plot(observed_means, observed_stdev, fitting_function, algorithm, case):
     plt.style.use('default')
     plt.rcParams['font.family'] = 'serif'
     plt.rcParams['axes.facecolor'] = 'white'
 
-    n_values = np.array([item[0] for item in data])
-    t_values = np.array([item[1] for item in data])
+    n_values = np.array([item[0] for item in observed_means])
+    t_values = np.array([item[1] for item in observed_means])
+    stdev_values = np.array([item[1] for item in observed_stdev])
 
     # Use curve_fit to fit the specified function to the data
     params, covariance = curve_fit(fitting_function, n_values, t_values)
     fitted_params = tuple(params)
     fit_curve = fitting_function(n_values, *fitted_params)
 
+    # Flatten the arrays for compatibility with Matplotlib
+    n_values_flat = n_values.flatten()
+    t_values_flat = t_values.flatten()
+    stdev_values_flat = stdev_values.flatten()
+
     # Plotting the original data and the fitted curve
-    plt.plot(n_values, t_values, marker='o', linestyle='-', color='b', label='Observed Data')
-    plt.plot(n_values, fit_curve, linestyle='--', color='r', 
+    plt.errorbar(n_values_flat, t_values_flat, yerr=stdev_values_flat, fmt='o', color='blue', label='Observed data')
+    plt.errorbar(n_values_flat, t_values_flat, yerr=stdev_values_flat, fmt='none', ecolor='gray', elinewidth=1, capsize=5)
+    plt.plot(n_values_flat, fit_curve, linestyle='--', color='r',
              label=pretty_params(fitting_function, fitted_params))
 
     # Random is average

@@ -13,7 +13,10 @@ algorithms = [
         'quickSort',
         'mergeSort',
         'heapSort']
-results = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in algorithms}
+res_mean = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in 
+algorithms}
+res_sd = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in al
+gorithms}
 expected = {
         'insertionSort': {'best': 'n',     'random': 'n^2',   'worst': 'n^2'},
         'selectionSort': {'best': 'n^2',   'random': 'n^2',   'worst': 'n^2'},
@@ -45,9 +48,10 @@ def grab(iterations, case, algorithm):
                             capture_output=True, text=True).stdout
     output = output.split(', ')[1:-1]
     output = [float(string) for string in output]
-    output = statistics.mean(output)
-    print('T(n)=' + str(output))
-    return output
+    mean = statistics.mean(output)
+    sd = statistics.stdev(output)
+    print('T(n)={:.4f}\tSD={:.4f}'.format(mean, sd))
+    return mean, sd
 
 def get_iters(algorithm, case):
     if expected[algorithm][case] == 'nlogn':
@@ -66,8 +70,9 @@ def main():
         for case in ['worst', 'random', 'best']:
             iterations, step = get_iters(algorithm, case)
             for n in range(step, iterations, step):
-                output = grab(n, case, algorithm)
-                results[algorithm][case].append((n, output))
+                mean, sd = grab(n, case, algorithm)
+                res_mean[algorithm][case].append((n, mean))
+                res_sd[algorithm][case].append((n, sd))
 
             if expected[algorithm][case] == 'n^2':
                 selected_function = fit.quadratic_function
@@ -80,7 +85,8 @@ def main():
                 return -1
 
             fit.fit_and_plot(
-                    results[algorithm][case],
+                    res_mean[algorithm][case],
+                    res_sd[algorithm][case],
                     selected_function,
                     algorithm,
                     case)
