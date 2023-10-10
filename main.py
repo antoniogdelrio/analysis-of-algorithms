@@ -1,4 +1,6 @@
 import subprocess
+import resource
+import sys
 import os
 import statistics
 import matplotlib.pyplot as plt
@@ -24,6 +26,16 @@ def compile():
     cmd = "gcc -O0 src/index.c -o index"
     subprocess.run(cmd.split())
 
+def set_stack_limit(new_gb_limit=10.0):
+    new_bytes_limit = int(new_gb_limit * 1024 * 1024 * 1024)  # Convert GB to bytes
+    resource.setrlimit(
+            resource.RLIMIT_STACK,
+            (new_bytes_limit, resource.RLIM_INFINITY))
+
+    current_stack_limit_bytes, _ = resource.getrlimit(resource.RLIMIT_STACK)
+    current_stack_limit_gb = current_stack_limit_bytes / (1024 * 1024 * 1024)
+    print(f"Stack size limit: {current_stack_limit_gb} GB")
+
 def grab(iterations, case, algorithm):
     print(algorithm
           + "\t n=" + str(iterations) 
@@ -48,6 +60,7 @@ def get_iters(algorithm, case):
 
 def main():
     compile()
+    set_stack_limit(10.0)
 
     for algorithm in algorithms:
         for case in ['worst', 'random', 'best']:
