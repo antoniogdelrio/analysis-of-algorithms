@@ -15,8 +15,7 @@ algorithms = [
         'heapSort']
 res_mean = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in 
 algorithms}
-res_sd = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in al
-gorithms}
+res_sd = {algorithm: {'best': [], 'random': [], 'worst': []} for algorithm in algorithms}
 expected = {
         'insertionSort': {'best': 'n',     'random': 'n^2',   'worst': 'n^2'},
         'selectionSort': {'best': 'n^2',   'random': 'n^2',   'worst': 'n^2'},
